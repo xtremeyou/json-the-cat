@@ -1,17 +1,22 @@
 const needle = require("needle");
-const args = process.argv;
-const url = args[2];
-const urlLink = "https://api.thecatapi.com/v1/breeds/search?q=";
 
-const fetchBreedDescription = function(breedName, callback) {
-  needle.get(urlLink + url, (error, response, body) => {
-    if (!error && response) {
-      let firstEntry = body.map(({ description }) => description);
-      callback(null, firstEntry);
-    } else {
+//
+const fetchBreedDescription = function (breedName, callback) {
+  const url = `https://api.t/hecatapi.com/v1/breeds/search?q=${breedName}`
+  needle.get(url, (error, response, body) => {
+    if (error) {
       callback(error, null);
+      return
     }
-  });
-};
 
+    const data = body[0];
+    if (!data) {
+      callback("Cat not found", null)
+      return
+    }
+
+    const breedDesc = data.description;
+    callback(null, breedDesc);
+  });
+}
 module.exports = { fetchBreedDescription };
